@@ -46,7 +46,7 @@ class employeeClass:
         
         txt_search=Entry(SearchFrame,textvariable=self.var_searchtext,font=("goudy old style",15),bg="lightyellow",fg="black")
         txt_search.place(x=200,y=10)
-        btn_search=Button(SearchFrame,text="Search",font=("goudy old style",15),bg="#4caf50",fg="black",cursor="hand2").place(x=420,y=9,width=150,height=30)
+        btn_search=Button(SearchFrame,text="Search",command=self.search,font=("goudy old style",15),bg="#4caf50",fg="black",cursor="hand2").place(x=420,y=9,width=150,height=30)
         
         #====title====
         title=Label(self.root,text="Employee Details",font=("goudy olfd style",15),bg="#0f4d7d",fg="white").place(x=50,y=100,width=1000)
@@ -285,7 +285,27 @@ class employeeClass:
 
         self.var_salary.set("")
         self.show()
-        
+    def search(self):
+        con= sqlite3.connect(database=r'ims.db1')
+        cur=con.cursor()    
+        try:
+            if self.var_searchby.get()=="Select":
+                messagebox.showerror("Error","Select SearchBy option",parent=self.root)
+            elif self.var_searchtext.get()=="":
+                messagebox.showerror("Error","Search input should be required",parent=self.root)
+
+            else:   
+                cur.execute("select * from employee where "+self.var_searchby.get()+" LIKE '%"+self.var_searchtext.get()+"%'")
+                rows=cur.fetchall()
+                if len(rows)!=0:
+                    self.EmployeeTable.delete(*self.EmployeeTable.get_children())
+                    for row in rows:
+                        self.EmployeeTable.insert('',END,values=row)
+                else:
+                    messagebox.showerror("Error",f"No record found!!!",parent=self.root)
+        except Exception as ex:
+            messagebox.showerror("Error",f"Error due to :{str(ex)}",parent=self.root)
+          
 if __name__=="__main__":      
     root=Tk()
     obj=employeeClass(root)
