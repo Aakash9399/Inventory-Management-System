@@ -99,7 +99,7 @@ class employeeClass:
         btn_add=Button(self.root,text="Save",command=self.add,font=("goudy old style",15),bg="blue",fg="black",cursor="hand2").place(x=500,y=305,width=110,height=28)
         btn_update=Button(self.root,text="Update",command=self.update,font=("goudy old style",15),bg="#4caf50",fg="black",cursor="hand2").place(x=620,y=305,width=110,height=28)
         btn_delete=Button(self.root,text="Delete",command=self.delete,font=("goudy old style",15),bg="#f44336",fg="black",cursor="hand2").place(x=740,y=305,width=110,height=28)
-        btn_clear=Button(self.root,text="Clear",font=("goudy old style",15),bg="#607d8b",fg="black",cursor="hand2").place(x=860,y=305,width=110,height=28)
+        btn_clear=Button(self.root,text="Clear",command=self.clear,font=("goudy old style",15),bg="#607d8b",fg="black",cursor="hand2").place(x=860,y=305,width=110,height=28)
 
         
         #=====Employee Details===
@@ -265,13 +265,26 @@ class employeeClass:
                         cur.execute("delete from employee where eid=?",(self.var_emp_id.get(),))
                         con.commit()
                         messagebox.showinfo("Delete","Employee Deleted Successfully",parent=self.root)
-                        self.show()
+                        self.clear()
                 
             
         except Exception as ex:
             messagebox.showerror("Error",f"Error due to :{str(ex)}",parent=self.root)
             
-         
+    def clear(self): 
+        self.var_emp_id.set("")
+        self.var_name.set("")
+        self.var_email.set("")
+        self.var_gender.set("Select")
+        self.var_contact.set("")
+        self.var_dob.set("")
+        self.var_doj.set("")
+        self.var_pass.set("")
+        self.var_utype.set("Admin")
+        self.txt_address.delete("1.0",END)
+
+        self.var_salary.set("")
+        self.show()
         
 if __name__=="__main__":      
     root=Tk()
