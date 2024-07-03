@@ -284,6 +284,8 @@ class employeeClass:
         self.txt_address.delete("1.0",END)
 
         self.var_salary.set("")
+        self.var_searchtext.set("")
+        self.var_searchby.set("Select")
         self.show()
     def search(self):
         con= sqlite3.connect(database=r'ims.db1')
