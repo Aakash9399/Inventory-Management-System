@@ -4,6 +4,7 @@ from employee import employeeClass
 from supplier import supplierClass
 from category import categoryClass
 from product import productClass
+from sales import salesClass
 class IMS:
     def __init__(self,root):
         self.root=root
