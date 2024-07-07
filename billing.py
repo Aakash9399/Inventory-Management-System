@@ -73,6 +73,93 @@ class billClass:
         
         lbl_note=Label(ProductFrame1,text="Note:'Enter 0 quantity to remove product from the cart'",font=("goudy old style",14),anchor='w',bg="white",fg="red" ).pack(side=BOTTOM,fill=X)
 
+        #====== customer frame=====
+        
+        self.var_cname=StringVar()
+        self.var_contact=StringVar()
+        CustomerFrame=Frame(self.root,bd=4,relief=RIDGE,bg="white")
+        CustomerFrame.place(x=420,y=110,width=530,height=70)
+        
+        ctitle=Label(CustomerFrame,text="Customer Details",font=("goudy old style",15),bg="lightgray").pack(side=TOP,fill=X)
+        lbl_name=Label(CustomerFrame,text='Name',font=('times new roman',15),bg='white').place(x=5,y=35)
+        txt_name=Entry(CustomerFrame,textvariable=self.var_cname,font=('times new roman',13),bg='lightyellow').place(x=80,y=35,width=180)
+        
+        lbl_contact=Label(CustomerFrame,text='Contact',font=('times new roman',15),bg='white').place(x=270,y=35)
+        txt_contact=Entry(CustomerFrame,textvariable=self.var_contact,font=('times new roman',13),bg='lightyellow').place(x=340,y=35,width=170)
+        
+        Cal_Cart_Frame=Frame(self.root,bd=4,relief=RIDGE,bg="white")
+        Cal_Cart_Frame.place(x=420,y=190,width=530,height=360)
+        
+        Cal_Frame=Frame(Cal_Cart_Frame,bd=4,relief=RIDGE,bg="white")
+        Cal_Frame.place(x=5,y=10,width=268,height=340)
+        
+        Cart_Frame=Frame(Cal_Cart_Frame,bd=3,relief=RIDGE)
+        Cart_Frame.place(x=280,y=8,width=245,height=342)
+        carttitle=Label(Cart_Frame,text="Cart \tTotal Product:[0]",font=("goudy old style",15),bg="lightgray").pack(side=TOP,fill=X)
+
+        
+        scrolly=Scrollbar(Cart_Frame,orient=VERTICAL)
+        scrollx=Scrollbar(Cart_Frame,orient=HORIZONTAL)
+        
+        self.Cart_Table=ttk.Treeview(Cart_Frame,columns=("pid","name","price","qty","status"),yscrollcommand=scrolly.set,xscrollcommand=scrollx.set)
+        scrollx.pack(side=BOTTOM,fill=X)
+        scrolly.pack(side=RIGHT,fill=Y)
+        scrollx.config(command=self.Cart_Table.xview)
+        scrolly.config(command=self.Cart_Table.yview)
+
+        
+        
+        self.Cart_Table.heading("pid",text="PID")
+        self.Cart_Table.heading("name",text="NAME")
+        self.Cart_Table.heading("price",text="PRICE")
+        self.Cart_Table.heading("qty",text="QTY")
+        self.Cart_Table.heading("status",text="STATUS")
+
+        
+        
+        self.Cart_Table["show"]="headings"
+        
+        self.Cart_Table.column("pid",width=40)
+        self.Cart_Table.column("name",width=100)
+        self.Cart_Table.column("price",width=90)
+        self.Cart_Table.column("qty",width=30)
+        self.Cart_Table.column("status",width=90)
+
+        self.Cart_Table.pack(fill=BOTH,expand=1)
+        #self.Cart_Table.bind("<ButtonRelease-1>",self.get_data)
+        
+        
+        #====menu frame====ADD CART buttons
+        
+        self.var_pid=StringVar()
+        self.var_pname=StringVar()
+        self.var_price=StringVar()
+        self.var_qty=StringVar()
+        self.var_status=StringVar()
+        self.var_stock=StringVar()
+
+
+        Add_cartWidgetsFrame=Frame(self.root,bd=4,relief=RIDGE,bg="white")
+        Add_cartWidgetsFrame.place(x=420,y=550,width=530,height=110)
+        
+        lbl_p_name=Label(Add_cartWidgetsFrame,text="Product Name",font=("times new roman",15),bg='white').place(x=5,y=5)
+        txt_p_name=Entry(Add_cartWidgetsFrame,textvariable=self.var_pname,font=("times new roman",15),bg='lightyellow',state='readonly').place(x=5,y=35,width=190,height=22)
+        
+        lbl_p_price=Label(Add_cartWidgetsFrame,text="Price per Qty",font=("times new roman",15),bg='white').place(x=230,y=5)
+        txt_p_price=Entry(Add_cartWidgetsFrame,textvariable=self.var_price,font=("times new roman",15),bg='lightyellow',state='readonly').place(x=230,y=35,width=150,height=22)
+
+        lbl_p_qty=Label(Add_cartWidgetsFrame,text="Quantity",font=("times new roman",15),bg='white').place(x=390,y=5)
+        txt_p_qty=Entry(Add_cartWidgetsFrame,textvariable=self.var_qty,font=("times new roman",15),bg='lightyellow',).place(x=390,y=35,width=120,height=22)
+        
+        self.lbl_instock=Label(Add_cartWidgetsFrame,text="In Stock [9999]",font=("times new roman",15),bg='white')
+        self.lbl_instock.place(x=5,y=70)
+        
+        btn_clear_cart=Button(Add_cartWidgetsFrame,text='Clear',font=("times new roman",15,"bold"),bg="lightgray",cursor="hand2").place(x=180,y=70,width=150,height=30)
+        btn_add_cart=Button(Add_cartWidgetsFrame,text='ADD   |  Update Cart',font=("times new roman",15,"bold"),bg="orange",cursor="hand2").place(x=340,y=70,width=180,height=30)
+
+            
+        
+
         
 if __name__=="__main__":      
     root=Tk()
