@@ -5,6 +5,11 @@ from supplier import supplierClass
 from category import categoryClass
 from product import productClass
 from sales import salesClass
+from tkinter import ttk,messagebox
+import sqlite3
+import os
+import time
+
 class IMS:
     def __init__(self,root):
         self.root=root
@@ -58,6 +63,7 @@ class IMS:
         
          #footer
         lbl_footer=Label(self.root,text="IMS-Inventory Management System | Developed by Aakash Palliwar\n For any Technical issue Contact:9399866672",font=("times new roman",12),bg="#4d636d",fg="white").pack(side=BOTTOM,fill=X)
+        self.update_content()
       #========================================
       
     def employee(self):
@@ -79,6 +85,36 @@ class IMS:
     def sales(self):
         self.new_win=Toplevel(self.root)
         self.new_obj=salesClass(self.new_win)
+        
+    def update_content(self):
+        con=sqlite3.connect(database="ims.db1")
+        cur=con.cursor()
+        try:
+            cur.execute("select * from product")
+            product=cur.fetchall()
+            self.lbl_product.config(text=f'Total Products\n[{str(len(product))}]')
+            
+            cur.execute("select * from supplier")
+            supplier=cur.fetchall()
+            self.lbl_supplier.config(text=f'Total Suppliers\n[{str(len(supplier))}]')
+            
+            cur.execute("select * from categories")
+            categories=cur.fetchall()
+            self.lbl_category.config(text=f'Total Categories\n[{str(len(categories))}]')
+            
+            cur.execute("select * from employee")
+            employee=cur.fetchall()
+            self.lbl_employee.config(text=f'Total Employees\n[{str(len(employee))}]')
+            bill=len(os.listdir('bill'))
+            self.lbl_sales.config(text=f'Total Sales[{str(bill)}]')
+            
+            
+            time_=time.strftime("%I:%M:%S")
+            date_=time.strftime("%d:%m:%Y")
+            self.lbl_clock.config(text=f"Welcome to Inventory Management \t\t Date:{str(date_)} \t\t Time:{str(time_)}")
+            self.lbl_clock.after(200,self.update_content)
+        except Exception as ex:
+            messagebox.showerror("Error",f"Error due to :{str(ex)}",parent=self.root)
              
 if __name__=="__main__":      
     root=Tk()

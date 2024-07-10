@@ -3,6 +3,8 @@ from PIL import Image,ImageTk
 from tkinter import ttk,messagebox
 import sqlite3
 import time
+import os
+import tempfile
 class billClass:
     
     def __init__(self,root):
@@ -11,6 +13,7 @@ class billClass:
         self.root.title("Inventory Management System  |  Developed by Aakash Palliwar")
         self.root.config(bg="white")
         self.cart_list=[]
+        self.chk_print=0
         #title
         self.icon_title=PhotoImage(file="images/logo1.png")
         title=Label(self.root,text="Inventory Management System",image=self.icon_title,compound=LEFT,font=("times new roman",40,"bold"),bg="#010c48",fg="white",anchor='w',padx=20).place(x=0,y=0,relwidth=1,height=70)   
@@ -217,7 +220,7 @@ class billClass:
         self.lbl_net_pay=Label(billmenuFrame,text='Net Pay\n[0]',font=('goudy old style',15,'bold'),bg='#607d8b',fg='white')
         self.lbl_net_pay.place(x=246,y=5,width=160,height=70)
         
-        btn_print=Button(billmenuFrame,text='print',font=('goudy old style',15,'bold'),bg='lightgreen',cursor='hand2')
+        btn_print=Button(billmenuFrame,text='print',command=self.print_bill,font=('goudy old style',15,'bold'),bg='lightgreen',cursor='hand2')
         btn_print.place(x=2,y=80,width=120,height=50)
         
         btn_clear_all=Button(billmenuFrame,text='Clear All',command=self.clear_all,font=('goudy old style',15,'bold'),bg='gray',cursor='hand2')
@@ -378,7 +381,7 @@ class billClass:
             fp.write(self.txt_bill_area.get('1.0',END))
             fp.close()
             messagebox.showinfo("Saved","Bill has been generated and saved in backend",parent=self.root)
-            
+            self.chk_print=1
     
     def bill_top(self):
         self.invoice= int(time.strftime("%H%M%S"))+int(time.strftime("%d%m%Y"))
@@ -445,6 +448,17 @@ class billClass:
         date_=time.strftime("%d:%m:%Y")
         self.lbl_clock.config(text=f"Welcome to Inventory Management \t\t Date:{str(date_)} \t\t Time:{str(time_)}")
         self.lbl_clock.after(200,self.update_date_time)
+        
+    def print_bill(self):
+        if self.chk_print==1:
+            
+            messagebox.showinfo("Print","Please wait while printing",parent=self.root)
+            new_file=tempfile.mkstemp('.txt')
+            open(new_file,'w').write(self.txt_bill_area.get('1.0',END))
+            os.startfile(new_file,'print')
+        else:
+            messagebox.showerror("Error","Please generate bill to print the receipt",parent=self.root)
+            
 if __name__=="__main__":      
     root=Tk()
     obj=billClass(root)
