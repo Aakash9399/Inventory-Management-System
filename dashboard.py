@@ -20,7 +20,7 @@ class IMS:
         self.icon_title=PhotoImage(file="images/logo1.png")
         title=Label(self.root,text="Inventory Management System",image=self.icon_title,compound=LEFT,font=("times new roman",40,"bold"),bg="#010c48",fg="white",anchor='w',padx=20).place(x=0,y=0,relwidth=1,height=70)   
         #button
-        btn_logout=Button(self.root,text="Logout",font=("times new roman",15,"bold"),bg="Yellow",cursor="hand2").place(x=1150,y=10,height=50,width=150)
+        btn_logout=Button(self.root,text="Logout",font=("times new roman",15,"bold"),command=self.logout,bg="Yellow",cursor="hand2").place(x=1150,y=10,height=50,width=150)
         #clock
         self.lbl_clock=Label(self.root,text="Welcome to Inventory Management \t\t Date:DD-MM-YYYY \t\t Time:HH:MM:SS",font=("times new roman",15),bg="#4d636d",fg="white")
         self.lbl_clock.place(x=0,y=70,relwidth=1,height=30) 
@@ -106,7 +106,7 @@ class IMS:
             employee=cur.fetchall()
             self.lbl_employee.config(text=f'Total Employees\n[{str(len(employee))}]')
             bill=len(os.listdir('bill'))
-            self.lbl_sales.config(text=f'Total Sales[{str(bill)}]')
+            self.lbl_sales.config(text=f'Total Sale\n[{str(bill)}]')
             
             
             time_=time.strftime("%I:%M:%S")
@@ -115,7 +115,10 @@ class IMS:
             self.lbl_clock.after(200,self.update_content)
         except Exception as ex:
             messagebox.showerror("Error",f"Error due to :{str(ex)}",parent=self.root)
-             
+    
+    def logout(self):
+        self.root.destroy()
+        os.system("python login.py")         
 if __name__=="__main__":      
     root=Tk()
     obj=IMS(root)
