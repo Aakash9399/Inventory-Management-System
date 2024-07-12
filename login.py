@@ -3,6 +3,9 @@ from PIL import ImageTk
 from tkinter import messagebox
 import sqlite3
 import os
+import email_pass
+import smtplib
+import time
 
 class Login_system:
     def __init__(self,root):
@@ -10,6 +13,7 @@ class Login_system:
         self.root.geometry("1350x700+0+0")
         self.root.title("Inventory Management System  |  Developed by Aakash Palliwar")
         self.root.config(bg="#fafafa")
+        self.otp=''
         #========images
         self.phone_image=ImageTk.PhotoImage(file="images/phone.png")
         self.lbl_phone_image=Label(self.root,image=self.phone_image,bd=0).place(x=200,y=50)   
@@ -50,6 +54,7 @@ class Login_system:
         self.lbl_change_image=Label(self.root,bg='white')
         self.lbl_change_image.place(x=367,y=153,width=240,height=428)
         self.animate()
+      
 #============ All functions
     def animate(self):
         self.im=self.im1
@@ -94,36 +99,85 @@ class Login_system:
                 if email==NONE:
                     messagebox.showerror("Error","Invalid Employee ID,try again",parent=self.root)
                 else:
-                    #====== Forgrt window
+                    #====== Forgwt window
                     self.var_otp=StringVar()
                     self.var_new_pass=StringVar()
                     self.var_conf_pass=StringVar()
 
                     #call_send_email_function()
-                    self.forget_wind=Toplevel(self.root)
-                    self.forget_wind.title('RESET PASSWORD')
-                    self.forget_wind.geometry('400x350+500+100')
-                    self.forget_wind.focus_force()
-                    
-                    title=Label(self.forget_wind,text='Reset Password',font=('goudy old style',15,'bold'),bg='#3f51b5',fg='white').pack(side=TOP,fill=X)
-                    lbl_reset=Label(self.forget_wind,text="Enter OTP on Registered Email",font=("times new roman",15)).place(x=20,y=60)
-                    txt_reset=Entry(self.forget_wind,textvariable=self.var_otp,font=("times new roman",15),bg='lightyellow').place(x=20,y=100,width=250,height=30)
-                    self.btn_reset=Button(self.forget_wind,text="Submit",font=("times new roman",15),bg='lightblue')
-                    self.btn_reset.place(x=280,y=100,width=100,height=30)
-                    
-                    lbl_new_pass=Label(self.forget_wind,text="New Password",font=("times new roman",15)).place(x=20,y=160)
-                    txt_new_pass=Entry(self.forget_wind,textvariable=self.var_new_pass,font=("times new roman",15),bg='lightyellow').place(x=20,y=190,width=250,height=30)
-                    
-                    lbl_c_pass=Label(self.forget_wind,text="Confirm Password",font=("times new roman",15)).place(x=20,y=225)
-                    txt_c_pass=Entry(self.forget_wind,textvariable=self.var_conf_pass,font=("times new roman",15),bg='lightyellow').place(x=20,y=255,width=250,height=30)
-                    
-                    self.btn_update=Button(self.forget_wind,text="Update",state=DISABLED,font=("times new roman",15),bg='lightblue')
-                    self.btn_update.place(x=150,y=300,width=100,height=30)
-                    
+                    chk=self.send_email(email[0])
+                    if chk!='s':
+                        messagebox.showerror("Error","Connection Error,try again",parent=self.root)
+                    else:
+                        self.forget_wind=Toplevel(self.root)
+                        self.forget_wind.title('RESET PASSWORD')
+                        self.forget_wind.geometry('400x350+500+100')
+                        self.forget_wind.focus_force()
+                        
+                        title=Label(self.forget_wind,text='Reset Password',font=('goudy old style',15,'bold'),bg='#3f51b5',fg='white').pack(side=TOP,fill=X)
+                        lbl_reset=Label(self.forget_wind,text="Enter OTP on Registered Email",font=("times new roman",15)).place(x=20,y=60)
+                        txt_reset=Entry(self.forget_wind,textvariable=self.var_otp,font=("times new roman",15),bg='lightyellow').place(x=20,y=100,width=250,height=30)
+                        self.btn_reset=Button(self.forget_wind,text="Submit",command=self.validate_otp,font=("times new roman",15),bg='lightblue')
+                        self.btn_reset.place(x=280,y=100,width=100,height=30)
+                        
+                        lbl_new_pass=Label(self.forget_wind,text="New Password",font=("times new roman",15)).place(x=20,y=160)
+                        txt_new_pass=Entry(self.forget_wind,textvariable=self.var_new_pass,font=("times new roman",15),bg='lightyellow').place(x=20,y=190,width=250,height=30)
+                        
+                        lbl_c_pass=Label(self.forget_wind,text="Confirm Password",font=("times new roman",15)).place(x=20,y=225)
+                        txt_c_pass=Entry(self.forget_wind,textvariable=self.var_conf_pass,font=("times new roman",15),bg='lightyellow').place(x=20,y=255,width=250,height=30)
+                        
+                        self.btn_update=Button(self.forget_wind,text="Update",command=self.update_password,state=DISABLED,font=("times new roman",15),bg='lightblue')
+                        self.btn_update.place(x=150,y=300,width=100,height=30)
+                        
                     
                     
         except Exception as ex:
             messagebox.showerror("Error",f"Error due to :{str(ex)}",parent=self.root)
+    def update_password(self):
+        if self.var_new_pass.get()=='' or self.var_conf_pass.get()=='':
+            messagebox.showerror("Error","Please Enter New Password and Confirm Password",parent=self.forget_wind)
+        elif self.var_new_pass.get()!= self.var_conf_pass.get():
+            messagebox.showerror("Error","Password should be same",parent=self.forget_wind)
+        else:
+            con=sqlite3.connect(database="ims.db1")
+        cur=con.cursor()
+        try:
+            cur.execute("Update employee SET pass=? where eid=?",(self.var_new_pass.get(),self.employee_id.get()))
+            con.commit()
+            messagebox.showinfo("Success","Password updated succesfully",parent=self.forget_wind)
+            self.forget_wind.destroy()
+            
+        except Exception as ex:
+            messagebox.showerror("Error",f"Error due to :{str(ex)}",parent=self.root) 
+    def validate_otp(self):
+        if int(self.otp)==int(self.var_otp.get()):
+            self.btn_update.config(state=NORMAL)
+            self.btn_reset.config(state=DISABLED) 
+        else:
+            messagebox.showerror("Error","Invalid OTP,try again",parent=self.forget_wind)
+            
+    def send_email(self,to_):
+        s=smtplib.SMTP('smtp.gmail.com',587)
+        s.starttls()
+        email_=email_pass.email_
+        pass_=email_pass.pass_
+        
+        s.login(email_,pass_)
+        
+        self.otp=int(time.strftime("%H%S%M"))+int(time.strftime("%S"))
+        
+        subj="IMS-Reset Password OTP"
+        msg=f"Dear Sir/Madam,\n\nYOur Reset OTP is{str(self.otp)}.\n\nWith Regards,\nIMS Team "
+        msg="Subject:{}\n\n{}".format(subj,msg)
+        s.sendmail(email_,to_,msg)
+        chk=s.ehlo()
+        if chk[0]==250:
+            return 's'
+        else:
+            return 'f'
+        
+      
+   
 root=Tk()
 obj=Login_system(root)
 root.mainloop()
